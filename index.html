@@ -11,16 +11,27 @@
     <button onclick="toggleMode(modes.pan)">Toggle pan</button>
     <button onclick="toggleMode(modes.drawing)">Toggle drawing</button>
     <input id="colorPicker" value="#000000" data-jscolor="{}" />
-    <button onclick="clearCanvas(canvas)">Clear</button>
+    <button onclick="clearCanvas(canvas, svgState)">Clear</button>
+    <button onclick="restoreCanvas(canvas, svgState, bgUrl)">Restore</button>
+
     <canvas id="canvas"></canvas>
 
-
-    <div id="objectButtons">
-      <p>Objects</p>
-      <button onclick="createRect(canvas)">Rect</button>
-      <button onclick="createCirc(canvas)">Circ</button>
+    <div
+      id="objectButtonsWrapper"
+      style="display: flex; flex-direction: column; width: 180px;"
+    >
+      <div id="objectButtons">
+        <p>Objects</p>
+        <button onclick="createRect(canvas)">Rect</button>
+        <button onclick="createCirc(canvas)">Circ</button>
+      </div>
       <button onclick="groupObjects(canvas, group, true)">Group</button>
-      <button onclick="ungroupObjects(canvas, group, false)">Ungroup</button>
+      <button onclick="groupObjects(canvas, group, false)">Ungroup</button>
+    </div>
+
+    <div>
+      <p>Image</p>
+      <input type="file" id="imagePicker" accept="image/">
     </div>
 
     <script src="./lib/jscolor.min.js"></script>

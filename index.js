@@ -13,16 +13,6 @@ const setBackground = (url, canvas) => {
   });
 };
 
-const canvas = initCanvas("canvas");
-let mousePressed = false;
-let currentMode;
-let color = "#000000";
-
-const modes = {
-  pan: "pan",
-  drawing: "drawing",
-};
-
 const toggleMode = (mode) => {
   if (mode === modes.pan) {
     if (currentMode === modes.pan) {
@@ -86,12 +76,23 @@ const setColorListener = () => {
   });
 };
 
-const clearCanvas = (canvas) => {
+const clearCanvas = (canvas, state) => {
+  state.val = canvas.toSVG();
   canvas.getObjects().forEach((obj) => {
     if (obj !== canvas.backgroundImage) {
       canvas.remove(obj);
     }
   });
+};
+
+const restoreCanvas = (canvas, state, bgUrl) => {
+  if (state.val) {
+    fabric.loadSVGFromString(state.val, (objects) => {
+      objects = objects.filter((o) => o["xlink:href"] !== bgUrl);
+      canvas.add(...objects);
+      canvas.requestRenderAll();
+    });
+  }
 };
 
 const createRect = (canvas) => {
@@ -163,11 +164,58 @@ const createCirc = (canvas) => {
   });
 };
 
-setBackground(
-  "https://drscdn.500px.org/photo/1077610594/q%3D80_m%3D2000/v2?sig=56a7c87d7ca1de29f513a00d217c2f5ee08d6544a009f816a6b4a3ac6dc24d35",
-  canvas
-);
+const groupObjects = (canvas, group, shouldGroup) => {
+  if (shouldGroup) {
+    const objects = canvas.getObjects();
+    group.val = new fabric.Group(objects, { cornerColor: "white" });
+    clearCanvas(canvas, svgState);
+    canvas.add(group.val);
+    canvas.requestRenderAll();
+  } else {
+    group.val.destroy();
+    const oldGroup = group.val.getObjects();
+    clearCanvas(canvas, svgState);
+    canvas.add(...oldGroup);
+    group.val = null;
+    canvas.requestRenderAll();
+  }
+};
+
+const imageAdd = (e) => {
+  const file = e.target.files[0];
+
+  reader.readAsDataURL(file);
+};
+
+const canvas = initCanvas("canvas");
+const svgState = {};
+let mousePressed = false;
+let color = "#000000";
+const group = {};
+const bgUrl =
+  "https://drscdn.500px.org/photo/1077610594/q%3D80_m%3D2000/v2?sig=56a7c87d7ca1de29f513a00d217c2f5ee08d6544a009f816a6b4a3ac6dc24d35";
+
+let currentMode;
+
+const modes = {
+  pan: "pan",
+  drawing: "drawing",
+};
+const reader = new FileReader();
+
+setBackground(bgUrl, canvas);
 
 setPanEvents(canvas);
 
 setColorListener();
+
+const inputFile = document.getElementById("imagePicker");
+inputFile.addEventListener("change", imageAdd);
+
+reader.addEventListener("load", () => {
+  console.log(reader.result);
+  fabric.Image.fromURL(reader.result, (img) => {
+    canvas.add(img);
+    canvas.requestRenderAll();
+  });
+});
