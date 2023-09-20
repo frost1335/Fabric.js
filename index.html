@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Hello FabricJS</h1>
+
+    <button onclick="toggleMode(modes.pan)">Toggle pan</button>
+    <button onclick="toggleMode(modes.drawing)">Toggle drawing</button>
+    <input id="colorPicker" value="#000000" data-jscolor="{}" />
+    <button onclick="clearCanvas(canvas)">Clear</button>
+    <canvas id="canvas"></canvas>
+
+
+    <div id="objectButtons">
+      <p>Objects</p>
+      <button onclick="createRect(canvas)">Rect</button>
+      <button onclick="createCirc(canvas)">Circ</button>
+    </div>
+
+    <script src="./lib/jscolor.min.js"></script>
+    <script src="./lib/fabric.min.js"></script>
+    <script src="index.js"></script>
+  </body>
+</html>
